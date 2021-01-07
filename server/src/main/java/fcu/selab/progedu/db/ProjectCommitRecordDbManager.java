@@ -275,15 +275,12 @@ public class ProjectCommitRecordDbManager {
   public int getProjectCommitCount(int pgId) {
     int commitNumber = 0;
     String sql =
-        "SELECT commitNumber from Project_Commit_Record a where (a.commitNumber = "
-            + "(SELECT max(commitNumber) FROM Project_Commit_Record WHERE pgId = ?));";
+        "SELECT max(commitNumber) FROM Project_Commit_Record WHERE pgId = ?";
     try (Connection conn = database.getConnection();
         PreparedStatement preStmt = conn.prepareStatement(sql)) {
       preStmt.setInt(1, pgId);
       try (ResultSet rs = preStmt.executeQuery()) {
-        while (rs.next()) {
-          commitNumber = rs.getInt("commitNumber");
-        }
+        commitNumber = rs.getInt("commitNumber");
       }
     } catch (SQLException e) {
       LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
